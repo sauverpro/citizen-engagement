@@ -9,11 +9,9 @@ export default defineConfig(({ command, mode }) => {
     plugins: [react()],
     server: {
       port: 5173,
-      proxy: {
+      proxy: mode === 'development' ? {
         '/api': {
-          target: mode === 'production' 
-            ? 'https://citizen-engagement-backend.onrender.com'
-            : 'http://localhost:5000',
+          target: 'http://localhost:5000',
           changeOrigin: true,
           secure: false,
           configure: (proxy, _options) => {
@@ -28,7 +26,7 @@ export default defineConfig(({ command, mode }) => {
             });
           }
         }
-      }
+      } : {}
     },
     define: {
       'process.env.VITE_API_URL': JSON.stringify(
