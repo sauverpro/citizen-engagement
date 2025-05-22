@@ -179,7 +179,41 @@ MIT License - feel free to use this project for your own purposes.
 
 ### Deployment
 
-#### Deploying to Vercel
+#### 1. Backend Deployment (Render.com)
+
+1. **Prerequisites**
+   - [Render Account](https://render.com/signup)
+   - Git repository with your code
+
+2. **Deploy to Render**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" and select "Web Service"
+   - Connect your GitHub repository
+   - Configure the service:
+     ```
+     Name: citizensys-api
+     Runtime: Node
+     Build Command: npm install
+     Start Command: npm start
+     ```
+   
+3. **Environment Variables**
+   Set the following in Render Dashboard:
+   ```
+   NODE_ENV=production
+   JWT_SECRET=your_secure_jwt_secret
+   PORT=8080
+   ```
+
+4. **Database Setup**
+   - Render will automatically create a persistent disk at `/opt/render/project/src/data`
+   - Your SQLite database will be stored here
+
+5. **Note Your API URL**
+   - Your API will be available at `https://citizensys-api.onrender.com` (or similar)
+   - You'll need this URL for frontend configuration
+
+#### 2. Frontend Deployment (Vercel)
 
 1. **Prerequisites**
    - [Vercel Account](https://vercel.com/signup)
@@ -188,7 +222,14 @@ MIT License - feel free to use this project for your own purposes.
    npm install -g vercel
    ```
 
-2. **Automatic Deployment (Recommended)**
+2. **Environment Setup**
+   Add these environment variables in Vercel Dashboard:
+   ```
+   VITE_API_URL=https://citizensys-api.onrender.com
+   VITE_WS_URL=wss://citizensys-api.onrender.com
+   ```
+
+3. **Automatic Deployment (Recommended)**
    - Fork/Clone this repository to your GitHub account
    - Go to [Vercel Dashboard](https://vercel.com/dashboard)
    - Click "New Project"
@@ -198,14 +239,10 @@ MIT License - feel free to use this project for your own purposes.
      - Build Command: `npm run build`
      - Output Directory: `dist`
      - Install Command: `npm install`
-   - Add Environment Variables:
-     ```
-     VITE_API_URL=your_backend_url
-     VITE_WS_URL=your_websocket_url
-     ```
+   - Add the environment variables from step 2
    - Click "Deploy"
 
-3. **Manual Deployment (Using CLI)**
+4. **Manual Deployment (Using CLI)**
    ```bash
    # Login to Vercel
    vercel login
@@ -217,33 +254,25 @@ MIT License - feel free to use this project for your own purposes.
    vercel --prod
    ```
 
-4. **Configuration**
-   Create a `vercel.json` file in the root directory:
-   ```json
-   {
-     "rewrites": [
-       {
-         "source": "/(.*)",
-         "destination": "/index.html"
-       }
-     ]
-   }
-   ```
+5. **Configuration**
+   The `vercel.json` file is already configured for:
+   - Client-side routing
+   - Build settings
+   - Framework specifications
 
-5. **Custom Domain (Optional)**
+6. **Custom Domain (Optional)**
    - Go to your project settings in Vercel Dashboard
    - Navigate to "Domains"
    - Add your custom domain
    - Follow DNS configuration instructions
 
-6. **Continuous Deployment**
-   - Vercel automatically deploys:
-     - When you push to the main branch
-     - When you create/update a pull request
-   - Configure branch deployments in project settings
+7. **Continuous Deployment**
+   Both Render and Vercel will automatically deploy when you:
+   - Push to the main branch
+   - Create/update a pull request
 
-7. **Monitoring**
-   - View deployment status in Vercel Dashboard
-   - Monitor performance metrics
+8. **Monitoring**
+   - Monitor backend on Render Dashboard
+   - Monitor frontend on Vercel Dashboard
    - Check deployment logs
    - Set up alerts (optional)

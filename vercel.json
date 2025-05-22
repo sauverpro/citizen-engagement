@@ -8,6 +8,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "env": {
+    "VITE_API_URL": "https://citizen-engagement-backend.onrender.com",
+    "VITE_WS_URL": "wss://citizen-engagement-backend.onrender.com"
+  },
   "github": {
     "silent": true
   }
