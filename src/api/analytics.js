@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api/analytics';
+const API_URL = 'https://citizen-engagement-backend.onrender.com/api/analytics';
 
 // Helper function to get token
 const getToken = (token) => {
