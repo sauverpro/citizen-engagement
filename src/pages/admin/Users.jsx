@@ -129,9 +129,16 @@ const Users = () => {
     e.preventDefault();
     try {
       const token = getAuthToken();
-      await createUser(formData,token);
+      await createUser(formData, token);
       toast.success('User created successfully');
       setIsCreateModalOpen(false);
+      setFormData({
+        name: '',
+        email: '',
+        role: 'citizen',
+        agencyId: '',
+        password: ''
+      });
       fetchUsers();
     } catch (error) {
       toast.error(error.message);
@@ -142,9 +149,10 @@ const Users = () => {
     e.preventDefault();
     try {
       const token = getAuthToken();
-      await updateUser(token, selectedUser.id, formData);
+      await updateUser(selectedUser.id, formData, token);
       toast.success('User updated successfully');
       setIsEditModalOpen(false);
+      setSelectedUser(null);
       fetchUsers();
     } catch (error) {
       toast.error(error.message);
