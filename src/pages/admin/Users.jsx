@@ -7,7 +7,7 @@ import Table from '../../components/common/Table';
 import UserForm from '../../components/UserModal/UserForm.jsx';
 import UserDetails from '../../components/UserModal/UserDetails.jsx';
 import DeleteConfirm from '../../components/UserModal/DeleteConfirm.jsx';
-import { FaEdit, FaEye, FaTrash, FaUserPlus } from 'react-icons/fa';
+import { FaEdit, FaEye, FaTrash, FaUserPlus, FaBuilding } from 'react-icons/fa';
 
 const Users = () => {
   const { user } = useAuthContext();
@@ -17,9 +17,10 @@ const Users = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAssignAgencyModalOpen, setIsAssignAgencyModalOpen] = useState(false);
   const [agencies, setAgencies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -171,6 +172,29 @@ const Users = () => {
     }
   };
 
+  const handleAssignAgency = (user) => {
+    setSelectedUser(user);
+    setFormData({
+      ...formData,
+      agencyId: user.agencyId || ''
+    });
+    setIsAssignAgencyModalOpen(true);
+  };
+
+  const handleAssignAgencySubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = getAuthToken();
+      await updateUser(selectedUser.id, { agencyId: formData.agencyId }, token);
+      toast.success('Agency assigned successfully');
+      setIsAssignAgencyModalOpen(false);
+      setSelectedUser(null);
+      fetchUsers();
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   const columns = [
     {
       key: 'name',
@@ -249,6 +273,15 @@ const Users = () => {
       >
         <FaEdit />
       </button>
+      {user.role === 'agency' && (
+        <button
+          onClick={() => handleAssignAgency(user)}
+          className="text-gray-600 hover:text-purple-600"
+          title="Assign to agency"
+        >
+          <FaBuilding />
+        </button>
+      )}
       <button
         onClick={() => handleDelete(user)}
         className="text-gray-600 hover:text-red-600"
@@ -303,6 +336,48 @@ const Users = () => {
         setForm={setFormData}
         agencies={agencies}
       />
+
+      {/* New Agency Assignment Modal */}
+      <div className={`fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full ${isAssignAgencyModalOpen ? '' : 'hidden'}`}>
+        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="mt-3">
+            <h3 className="text-lg font-medium text-gray-900">Assign Agency</h3>
+            <form onSubmit={handleAssignAgencySubmit} className="mt-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Agency</label>
+                <select
+                  value={formData.agencyId}
+                  onChange={(e) => setFormData({ ...formData, agencyId: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <option value="">Select an agency</option>
+                  {agencies.map(agency => (
+                    <option key={agency.id} value={agency.id}>{agency.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAssignAgencyModalOpen(false);
+                    setSelectedUser(null);
+                  }}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Assign
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
 
       <UserDetails
         open={isDetailsModalOpen}
