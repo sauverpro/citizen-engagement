@@ -129,7 +129,7 @@ const Users = () => {
     e.preventDefault();
     try {
       const token = getAuthToken();
-      await createUser(token, formData);
+      await createUser(formData,token);
       toast.success('User created successfully');
       setIsCreateModalOpen(false);
       fetchUsers();
